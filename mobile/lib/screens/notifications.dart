@@ -68,7 +68,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               : Theme.of(context)
                                   .colorScheme
                                   .primaryContainer
-                                  .withOpacity(0.3),
+                                  .withValues(alpha: 0.3),
                         );
                       },
                     ),

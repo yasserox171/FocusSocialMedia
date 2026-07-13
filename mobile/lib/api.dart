@@ -10,8 +10,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-const String baseUrl =
+const String _defaultBaseUrl =
     String.fromEnvironment('BASE_URL', defaultValue: 'http://10.0.2.2:8000');
+
+/// Server address — configurable at runtime from the login screen and
+/// persisted, so one APK works for every member regardless of the
+/// center's server IP.
+String baseUrl = _defaultBaseUrl;
 
 class ApiException implements Exception {
   final int status;
@@ -29,6 +34,13 @@ class ApiClient {
     final prefs = await SharedPreferences.getInstance();
     _access = prefs.getString('access');
     _refresh = prefs.getString('refresh');
+    baseUrl = prefs.getString('base_url') ?? _defaultBaseUrl;
+  }
+
+  Future<void> setBaseUrl(String url) async {
+    baseUrl = url.trim().replaceAll(RegExp(r'/+$'), '');
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('base_url', baseUrl);
   }
 
   bool get hasToken => _access != null;

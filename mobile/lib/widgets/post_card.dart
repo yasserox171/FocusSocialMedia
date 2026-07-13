@@ -80,7 +80,7 @@ class _PostCardState extends State<PostCard> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 1),
                               decoration: BoxDecoration(
-                                color: primaryBlue.withOpacity(0.12),
+                                color: primaryBlue.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(chip,

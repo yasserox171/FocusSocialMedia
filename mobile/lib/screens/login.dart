@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../api.dart';
 import '../main.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,8 +14,15 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _username = TextEditingController();
   final _password = TextEditingController();
+  final _server = TextEditingController();
   String? _error;
   bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _server.text = baseUrl;
+  }
 
   Future<void> _submit() async {
     setState(() {
@@ -22,7 +30,11 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      await context.read<AuthState>().login(
+      final auth = context.read<AuthState>();
+      if (_server.text.trim().isNotEmpty && _server.text.trim() != baseUrl) {
+        await api.setBaseUrl(_server.text);
+      }
+      await auth.login(
             _username.text.trim(),
             _password.text,
           );
@@ -86,6 +98,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 FilledButton(
                   onPressed: _busy ? null : _submit,
                   child: Text(_busy ? 'جارٍ الدخول…' : 'دخول'),
+                ),
+                const SizedBox(height: 16),
+                ExpansionTile(
+                  title: const Text('إعدادات الخادم',
+                      style: TextStyle(fontSize: 13)),
+                  tilePadding: EdgeInsets.zero,
+                  childrenPadding: const EdgeInsets.only(bottom: 8),
+                  children: [
+                    TextField(
+                      controller: _server,
+                      textDirection: TextDirection.ltr,
+                      decoration: const InputDecoration(
+                        labelText: 'عنوان الخادم',
+                        hintText: 'http://192.168.1.10',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
