@@ -4,6 +4,7 @@ import { api } from "../api";
 import { useAuth } from "../auth";
 import type { Post } from "../types";
 import Avatar from "./Avatar";
+import { Linkified, youtubeEmbedUrl } from "./linkify";
 import { timeAgo } from "./timeago";
 
 const KIND_LABEL: Record<string, string> = {
@@ -51,6 +52,7 @@ export default function PostCard({
 
   const canDelete = user && (user.id === post.author.id || user.is_staff);
   const kindChip = KIND_LABEL[post.author.kind];
+  const ytEmbed = post.link_url ? youtubeEmbedUrl(post.link_url) : null;
 
   return (
     <article className="card post-card">
@@ -71,19 +73,34 @@ export default function PostCard({
         </div>
       </div>
 
-      {post.text && <p className="post-text">{post.text}</p>}
+      {post.text && (
+        <p className="post-text">
+          <Linkified text={post.text} />
+        </p>
+      )}
       {post.image && <img className="post-media" src={post.image} alt="" />}
       {post.video && <video className="post-media" src={post.video} controls />}
       {post.link_url && (
-        <a
-          className="link-preview"
-          href={post.link_url}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span className="lp-title">{post.link_title || "رابط خارجي"}</span>
-          <span className="lp-url">{post.link_url}</span>
-        </a>
+        ytEmbed ? (
+          <div className="yt-embed">
+            <iframe
+              src={ytEmbed}
+              title={post.link_title || "فيديو يوتيوب"}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        ) : (
+          <a
+            className="link-preview"
+            href={post.link_url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span className="lp-title">{post.link_title || "رابط خارجي"}</span>
+            <span className="lp-url">{post.link_url}</span>
+          </a>
+        )
       )}
 
       <div className="post-actions">
