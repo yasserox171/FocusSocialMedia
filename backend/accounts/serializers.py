@@ -8,8 +8,9 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "display_name", "bio", "avatar", "kind",
-                  "is_active", "date_joined"]
-        read_only_fields = ["id", "username", "kind", "is_active", "date_joined"]
+                  "is_active", "is_staff", "date_joined"]
+        read_only_fields = ["id", "username", "kind", "is_active", "is_staff",
+                            "date_joined"]
 
 
 class AdminUserSerializer(serializers.ModelSerializer):
