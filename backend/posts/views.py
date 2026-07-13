@@ -20,6 +20,11 @@ def annotated_posts(user, queryset=None):
             likes_count=Count("likes", distinct=True),
             liked_by_me=Exists(Like.objects.filter(post=OuterRef("pk"), user=user)),
         )
+        # annotate() with an aggregate (Count) silently drops the model's
+        # default ordering (Meta.ordering) — Django can't guarantee it
+        # survives the GROUP BY, so it must be restated explicitly here,
+        # otherwise posts come back in an arbitrary/oldest-first order.
+        .order_by("-created_at")
     )
 
 

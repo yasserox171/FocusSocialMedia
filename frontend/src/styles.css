@@ -250,6 +250,91 @@ input:focus, textarea:focus, select:focus {
   border: 1px solid var(--border);
 }
 
+.post-media.clickable {
+  cursor: zoom-in;
+  transition: filter 0.15s, transform 0.15s;
+}
+.post-media.clickable:hover { filter: brightness(0.96); }
+.post-media.clickable:active { transform: scale(0.995); }
+
+/* Full-screen image viewer */
+.lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 10, 22, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 80;
+  padding: 28px;
+  animation: toast-in 0.15s ease-out;
+  cursor: zoom-out;
+}
+.lightbox-img {
+  max-width: 100%;
+  max-height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55);
+  cursor: default;
+}
+.lightbox-close {
+  position: fixed;
+  top: 20px;
+  inset-inline-end: 20px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.lightbox-close:hover { background: rgba(255, 255, 255, 0.24); }
+
+/* Modern framed video player */
+.video-frame {
+  position: relative;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 10px;
+  background: #0a0e18;
+  box-shadow: var(--shadow);
+}
+.video-el {
+  display: block;
+  width: 100%;
+  max-height: 480px;
+  background: #000;
+}
+.video-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.25));
+  transition: background 0.15s;
+}
+.video-play-overlay:hover { background: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.35)); }
+.video-play-btn {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  padding-inline-start: 4px; /* optically center the ▶ glyph */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s;
+}
+.video-play-overlay:hover .video-play-btn { transform: scale(1.08); }
+
 .link-preview {
   display: block;
   border: 1px solid var(--border);

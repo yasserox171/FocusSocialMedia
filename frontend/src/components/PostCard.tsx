@@ -4,7 +4,9 @@ import { api } from "../api";
 import { useAuth } from "../auth";
 import type { Post } from "../types";
 import Avatar from "./Avatar";
+import Lightbox from "./Lightbox";
 import { Linkified, youtubeEmbedUrl } from "./linkify";
+import PostVideo from "./PostVideo";
 import { timeAgo } from "./timeago";
 
 const KIND_LABEL: Record<string, string> = {
@@ -23,6 +25,7 @@ export default function PostCard({
   const [liked, setLiked] = useState(post.liked_by_me);
   const [likes, setLikes] = useState(post.likes_count);
   const [justLiked, setJustLiked] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const toggleLike = async () => {
     // Optimistic update; server response corrects the count.
@@ -78,8 +81,15 @@ export default function PostCard({
           <Linkified text={post.text} />
         </p>
       )}
-      {post.image && <img className="post-media" src={post.image} alt="" />}
-      {post.video && <video className="post-media" src={post.video} controls />}
+      {post.image && (
+        <img
+          className="post-media clickable"
+          src={post.image}
+          alt=""
+          onClick={() => setLightboxOpen(true)}
+        />
+      )}
+      {post.video && <PostVideo src={post.video} />}
       {post.link_url && (
         ytEmbed ? (
           <div className="yt-embed">
@@ -118,6 +128,10 @@ export default function PostCard({
           </button>
         )}
       </div>
+
+      {lightboxOpen && post.image && (
+        <Lightbox src={post.image} onClose={() => setLightboxOpen(false)} />
+      )}
     </article>
   );
 }
