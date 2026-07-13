@@ -21,7 +21,11 @@ export default function Composer({ onCreated }: { onCreated: (p: Post) => void }
     if (text.trim()) form.append("text", text.trim());
     if (linkUrl.trim()) form.append("link_url", linkUrl.trim());
     if (file) {
-      form.append(file.type.startsWith("video/") ? "video" : "image", file);
+      // Some video containers (MKV, AVI, WMV, some MOVs) aren't reliably
+      // reported by the browser's MIME sniffer — file.type comes back
+      // empty. Only route to "image" when we're sure it's an image;
+      // everything else (including unrecognized types) goes to "video".
+      form.append(file.type.startsWith("image/") ? "image" : "video", file);
     }
     try {
       const post = await api.post<Post>("/posts/", form);
