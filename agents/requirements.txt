@@ -1,0 +1,4 @@
+anthropic>=0.60
+APScheduler>=3.10
+requests>=2.32
+python-dotenv>=1.0
