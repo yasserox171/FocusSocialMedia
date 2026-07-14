@@ -98,7 +98,21 @@ if REDIS_URL:
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {"hosts": [REDIS_URL]},
+            "CONFIG": {
+                # channels_redis defaults to a 5s socket_timeout with no
+                # retry, which is too tight on a resource-constrained local
+                # Docker/WSL2 host — a brief CPU/IO stall on the machine is
+                # enough to kill the WebSocket listener with a raw
+                # redis.exceptions.TimeoutError. Widen the timeout and let
+                # it retry instead of tearing down the connection.
+                "hosts": [{
+                    "address": REDIS_URL,
+                    "socket_timeout": int(os.environ.get("REDIS_SOCKET_TIMEOUT", 30)),
+                    "socket_connect_timeout": int(os.environ.get("REDIS_SOCKET_TIMEOUT", 30)),
+                    "retry_on_timeout": True,
+                    "health_check_interval": 30,
+                }],
+            },
         }
     }
 else:
