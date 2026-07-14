@@ -16,7 +16,10 @@ import anthropic
 
 log = logging.getLogger("agents.generation")
 
-MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-opus-4-8")
+# Haiku by default: agent posts are short, low-stakes social content, not
+# work worth Opus/Sonnet pricing. Override via ANTHROPIC_MODEL if you want
+# higher quality and accept the higher per-post cost.
+MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-haiku-4-5")
 
 client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY
 
@@ -56,15 +59,20 @@ def _extract(tag: str, text: str) -> str:
 def generate_post(agent: dict) -> dict | None:
     """Returns {"text", "link_url", "link_title"} or None if generation failed."""
     try:
+        # No `thinking` param: Haiku 4.5 doesn't support adaptive/extended
+        # thinking, and a short social post doesn't need it anyway — this is
+        # the main cost lever (thinking tokens are what made this expensive
+        # on Opus). web_search_20250305 (not the newer _20260209 variant) is
+        # the version Haiku 4.5 actually supports. max_uses=1 keeps a single
+        # grounding search instead of letting the model chain several.
         with client.messages.stream(
             model=MODEL,
-            max_tokens=16000,
-            thinking={"type": "adaptive"},
+            max_tokens=4096,
             system=agent["system_prompt"],
             tools=[{
-                "type": "web_search_20260209",
+                "type": "web_search_20250305",
                 "name": "web_search",
-                "max_uses": 4,
+                "max_uses": 1,
             }],
             messages=[{"role": "user", "content": GENERATION_INSTRUCTIONS}],
         ) as stream:
